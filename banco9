@@ -310,8 +310,93 @@ create table pedido_compra_item_log (
 	data_modificacao date not null,
 	operacao_realizada varchar(6) not null
 );
--------------------------------------------------------------
+------------------------| Ok |----------------------------
 
+create function auditoria_pedido_compra_item () returns trigger as $$
+begin
+	if (tg_op = 'insert') then 
+		insert into pedido_compra_item_log (compra_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (new.compra_fk, new.produto_fk, new.quantidade, new.preco, new.data_modificacao, new.operacao_realizada, current_timestamp, 'I');
+	elseif (tg_op = 'update') then 
+		insert into pedido_compra_item_log (compra_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (new.compra_fk, new.produto_fk, new.quantidade, new.preco, new.data_modificacao, new.operacao_realizada, current_timestamp, 'U');
+	elseif (tg_op = 'delete') then
+		insert into pedido_compra_item_log (compra_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (old.compra_fk, old.produto_fk, old.quantidade, old.preco, old.data_modificacao, old.operacao_realizada, current_timestamp, 'D');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+------------------------| Ok |----------------------------
+create function auditoria_pedido_compra () returns trigger as $$
+begin
+	if (tg_op = 'insert') then 
+		insert into pedido_compra_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (new.pessoa_fk, new.data, new.tipo_pagamento, new.codigo, new.data_modificacao, new.operacao_realizada, current_timestamp, 'I');
+	elseif (tg_op = 'update') then 
+		insert into pedido_compra_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (new.pessoa_fk, new.data, new.tipo_pagamento, new.codigo, new.data_modificacao, new.operacao_realizada, current_timestamp, 'U');
+	elseif (tg_op = 'delete') then
+		insert into pedido_compra_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (old.pessoa_fk, old.data, old.tipo_pagamento, old.codigo, old.data_modificacao, old.operacao_realizada, current_timestamp, 'D');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+------------------------| Ok |----------------------------
+create function auditoria_pedido_venda_item () returns trigger as $$
+begin
+	if (tg_op = 'insert') then 
+		insert into pedido_venda_item_log (venda_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (new.venda_fk, new.produto_fk, new.quantidade, new.preco, new.data_modificacao, new.operacao_realizada, current_timestamp, 'I');
+	elseif (tg_op = 'update') then 
+		insert into pedido_venda_item_log (venda_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (new.venda_fk, new.produto_fk, new.quantidade, new.preco, new.data_modificacao, new.operacao_realizada, current_timestamp, 'U');
+	elseif (tg_op = 'delete') then
+		insert into pedido_venda_item_log (venda_fk, produto_fk, quantidade, preco, data_modificacao, operacao_realizada)
+		values (old.venda_fk, old.produto_fk, old.quantidade, old.preco, old.data_modificacao, old.operacao_realizada, current_timestamp, 'D');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+------------------------| Ok |----------------------------
+create function auditoria_pedido_venda () returns trigger as $$
+begin
+	if (tg_op = 'insert') then 
+		insert into pedido_venda_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (new.pessoa_fk, new.data, new.tipo_pagamento, new.codigo, new.data_modificacao, new.operacao_realizada, current_timestamp, 'I');
+	elseif (tg_op = 'update') then 
+		insert into pedido_venda_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (new.pessoa_fk, new.data, new.tipo_pagamento, new.codigo, new.data_modificacao, new.operacao_realizada, current_timestamp, 'U');
+	elseif (tg_op = 'delete') then
+		insert into pedido_venda_log (pessoa_fk, data, tipo_pagamento, codigo, data_modificacao, operacao_realizada)
+		values (old.pessoa_fk, old.data, old.tipo_pagamento, old.codigo, old.data_modificacao, old.operacao_realizada, current_timestamp, 'D');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+------------------------| Ok |----------------------------
+create function auditoria_tabela_preco () returns trigger as $$
+begin
+	if (tg_op = 'insert') then 
+		insert into tabela_preco_log (preco_unitario_compra, preco_unitario_venda, data_modificacao, operacao_realizada)
+		values (new.preco_unitario_compra, new.preco_unitario_venda, new.data_modificacao, new.operacao_realizada, current_timestamp, 'I');
+	elseif (tg_op = 'update') then 
+		insert into tabela_preco_log (preco_unitario_compra, preco_unitario_venda, data_modificacao, operacao_realizada)
+		values (new.preco_unitario_compra, new.preco_unitario_venda, new.data_modificacao, new.operacao_realizada, current_timestamp, 'U');
+	elseif (tg_op = 'delete') then
+		insert into tabela_preco_log (preco_unitario_compra, preco_unitario_venda, data_modificacao, operacao_realizada)
+		values (old.preco_unitario_compra, old.preco_unitario_venda, old.data_modificacao, old.operacao_realizada, current_timestamp, 'D');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+------------------------| Ok |----------------------------
 create function auditoria_estado () returns trigger as $$
 begin
 	if (tg_op = 'insert') then 
@@ -328,7 +413,7 @@ begin
 end;
 $$ language plpgsql;
 
-------------------------OK----------------------------
+------------------------| Ok |----------------------------
 
 create function auditoria_cidade () returns trigger as $$
 begin
@@ -346,7 +431,7 @@ begin
 end;
 $$ language plpgsql;
 
-------------------------OK----------------------------
+------------------------| Ok |----------------------------
 
 create function auditoria_endereco () returns trigger as $$
 begin
@@ -364,7 +449,7 @@ begin
 end;
 $$ language plpgsql;
 
-------------------------OK----------------------------
+------------------------| Ok |----------------------------
 create function auditoria_pessoa () returns trigger as $$
 begin
 	if (tg_op = 'insert') then 
@@ -381,7 +466,7 @@ begin
 end;
 $$ language plpgsql;
 
-------------------------OK----------------------------
+------------------------| Ok |----------------------------
 create function auditoria_produto() returns trigger as $$
 begin
 	if (tg_op = 'insert') then 
@@ -397,7 +482,7 @@ begin
 	return new;
 end;
 $$ language plpgsql;
-------------------------OK----------------------------
+------------------------| Ok |----------------------------
 create function auditoria_estoque() returns trigger as $$
 begin
 	if (tg_op = 'insert') then 
@@ -413,6 +498,3 @@ begin
 	return new;
 end;
 $$ language plpgsql;
-		
-		
-		
